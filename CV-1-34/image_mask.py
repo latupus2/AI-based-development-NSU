@@ -4,6 +4,9 @@ import numpy as np
 import sys
 
 def create_mask(shape, radius, width, height):
+    """
+    Creates a mask with a white circle/square in the center
+    """
     mask = np.zeros((height, width), dtype=np.uint8)
     center = (width//2, height//2)
     
@@ -17,7 +20,17 @@ def create_mask(shape, radius, width, height):
     
     return mask
 
+def apply_mask(image, mask):
+    """
+    Bitwise "and" to apply mask to image
+    """
+    new_image = image.copy()
+    return cv2.bitwise_and(new_image, new_image, mask=mask)
+
 def main():
+    """
+    Main function. Opens an image and applies a mask to it.
+    """
     parser = argparse.ArgumentParser(description='Apply mask to image')
     parser.add_argument('input_image', help='Input image file path')
     parser.add_argument('--shape', choices=['circle', 'square'], default='circle',
@@ -38,7 +51,7 @@ def main():
         
         height, width = img.shape[:2]
         mask = create_mask(args.shape, args.radius, width, height)
-        result = cv2.bitwise_and(img, img, mask=mask)
+        result = apply_mask(img, mask)
         
         cv2.imwrite(args.output, result)
         print(f"Result saved in: {args.output}")
